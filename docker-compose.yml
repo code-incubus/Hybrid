@@ -1,15 +1,14 @@
 version: '3.8'
 
 services:
-
-  # Test runner — runs tests against real dummyjson.com API
   api-tests:
     build: .
-    environment:
-      - BASE_URL=https://dummyjson.com
-      - AUTH_URL=https://dummyjson.com/auth/login
-      - AUTH_USERNAME=emilys
-      - AUTH_PASSWORD=emilyspass
+    # Override CMD iz Dockerfile — integration profile
+    command: >
+      test -Pintegration
+      -DBASE_URL=https://dummyjson.com
+      -DAUTH_URL=https://dummyjson.com/auth/login
+      -DAUTH_USERNAME=emilys
+      -DAUTH_PASSWORD=emilyspass
     volumes:
-      # Share allure results between container and host
       - ./target/allure-results:/app/target/allure-results

@@ -1,14 +1,11 @@
 version: '3.8'
 
 services:
-
-  # WireMock — fake API server
   mock-service:
     image: wiremock/wiremock:latest
     ports:
       - "8080:8080"
     volumes:
-      # Mount our mappings into WireMock container
       - ./wiremock/mappings:/home/wiremock/mappings
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/__admin/mappings"]
@@ -16,14 +13,15 @@ services:
       timeout: 3s
       retries: 5
 
-  # Test runner — runs tests against WireMock
   api-tests:
     build: .
-    environment:
-      - BASE_URL=http://mock-service:8080
-      - AUTH_URL=http://mock-service:8080/auth/login
-      - AUTH_USERNAME=emilys
-      - AUTH_PASSWORD=emilyspass
+    # Override CMD iz Dockerfile — mock profile
+    command: >
+      test -Pmock
+      -DBASE_URL=http://mock-service:8080
+      -DAUTH_URL=http://mock-service:8080/auth/login
+      -DAUTH_USERNAME=emilys
+      -DAUTH_PASSWORD=emilyspass
     depends_on:
       mock-service:
         condition: service_healthy
