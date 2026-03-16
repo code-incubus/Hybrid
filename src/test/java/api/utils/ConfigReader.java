@@ -26,12 +26,16 @@ public class ConfigReader {
         return properties.getProperty(key);
     }
 
-    // Cita ENV prvo, pa fajl ako ENV ne postoji
     public static String getOrEnv(String key, String envName) {
+        // 1. Maven -D parameter (top priority)
+        String sysProp = System.getProperty(envName);
+        if (sysProp != null && !sysProp.isBlank()) return sysProp;
+
+        // 2. OS Environment variable
         String envValue = System.getenv(envName);
-        if (envValue != null && !envValue.isBlank()) {
-            return envValue;
-        }
+        if (envValue != null && !envValue.isBlank()) return envValue;
+
+        // 3. Fallback — config.properties
         return properties.getProperty(key);
     }
 }

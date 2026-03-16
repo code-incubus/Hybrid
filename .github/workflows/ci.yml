@@ -34,12 +34,12 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run integration tests
-        env:
-          BASE_URL: https://dummyjson.com
-          AUTH_URL: https://dummyjson.com/auth/login
-          AUTH_USERNAME: emilys
-          AUTH_PASSWORD: emilyspass
-        run: mvn test -Dsuite=testng.xml
+        run: |
+          mvn test -Dsuite=testng.xml \
+            -DBASE_URL=https://dummyjson.com \
+            -DAUTH_URL=https://dummyjson.com/auth/login \
+            -DAUTH_USERNAME=emilys \
+            -DAUTH_PASSWORD=emilyspass
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
@@ -89,26 +89,13 @@ jobs:
           done
           echo "WireMock is ready!"
 
-      - name: Debug — check WireMock mappings
-        env:
-          BASE_URL: http://localhost:8080
-        run: |
-          echo "=== Loaded WireMock mappings ==="
-          curl http://localhost:8080/__admin/mappings
-          echo ""
-          echo "=== Test GET /users ==="
-          curl http://localhost:8080/users
-          echo ""
-          echo "=== BASE_URL value ==="
-          echo "BASE_URL=$BASE_URL"
-
       - name: Run mock tests
-        env:
-          BASE_URL: http://localhost:8080
-          AUTH_URL: http://localhost:8080/auth/login
-          AUTH_USERNAME: emilys
-          AUTH_PASSWORD: emilyspass
-        run: mvn test -Dsuite=testng-mock.xml
+        run: |
+          mvn test -Dsuite=testng-mock.xml \
+            -DBASE_URL=http://localhost:8080 \
+            -DAUTH_URL=http://localhost:8080/auth/login \
+            -DAUTH_USERNAME=emilys \
+            -DAUTH_PASSWORD=emilyspass
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
