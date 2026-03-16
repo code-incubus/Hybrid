@@ -5,11 +5,8 @@ import io.restassured.http.ContentType;
 
 public class AuthService {
 
-    private static final String AUTH_URL =
-            ConfigReader.getOrEnv("auth.url", "AUTH_URL");
-
     public TokenResponse fetchToken() {
-
+        String authUrl = ConfigReader.getOrEnv("auth.url", "AUTH_URL");
         String username = ConfigReader.getOrEnv("auth.username", "AUTH_USERNAME");
         String password = ConfigReader.getOrEnv("auth.password", "AUTH_PASSWORD");
 
@@ -20,7 +17,7 @@ public class AuthService {
                         "{\"username\":\"%s\",\"password\":\"%s\",\"expiresInMins\":30}",
                         username, password
                 ))
-                .post(AUTH_URL)
+                .post(authUrl)
                 .as(TokenResponse.class);
 
         // If login failed, dummyjson returns message instead of token
