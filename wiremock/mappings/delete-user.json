@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "DELETE",
+    "urlPattern": "/users/[0-9]+"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"id\": 1, \"firstName\": \"Mock\", \"lastName\": \"User\", \"isDeleted\": true}"
+  }
+}

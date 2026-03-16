@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "PUT",
+    "urlPattern": "/users/[0-9]+"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"id\": 1, \"firstName\": \"Mock Updated\", \"lastName\": \"User\", \"email\": \"mock@test.com\", \"age\": 30, \"gender\": \"male\"}"
+  }
+}

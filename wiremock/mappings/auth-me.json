@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/auth/me"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"id\": 1, \"firstName\": \"Mock\", \"lastName\": \"Auth\", \"email\": \"mock.auth@test.com\"}"
+  }
+}

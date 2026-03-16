@@ -1,0 +1,10 @@
+# Normalize line endings for all text files
+* text=auto
+
+# Force LF for these file types
+*.java text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.properties text eol=lf
+*.md text eol=lf

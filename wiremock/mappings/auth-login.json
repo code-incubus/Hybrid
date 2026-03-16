@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/auth/login"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"accessToken\": \"MOCK_TOKEN_12345\", \"refreshToken\": \"MOCK_REFRESH_67890\"}"
+  }
+}

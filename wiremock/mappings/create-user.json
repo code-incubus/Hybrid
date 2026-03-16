@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/users/add"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"id\": 209, \"firstName\": \"Mock\", \"lastName\": \"Created\", \"email\": \"mock.created@test.com\", \"age\": 30, \"gender\": \"male\"}"
+  }
+}
