@@ -1,4 +1,5 @@
 {
+  "priority": 1,
   "request": {
     "method": "GET",
     "url": "/users/99999"
