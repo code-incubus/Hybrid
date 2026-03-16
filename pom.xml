@@ -60,7 +60,7 @@
             <version>${allure.version}</version>
         </dependency>
 
-        <!-- Faker — generates random realistic test data -->
+        <!-- Faker -->
         <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
@@ -71,24 +71,7 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
-                <configuration>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <!-- Tells Surefire to use testng.xml for parallel config -->
-<!--                    <suiteXmlFiles>-->
-<!--                        <suiteXmlFile>testng.xml</suiteXmlFile>-->
-<!--                    </suiteXmlFiles>-->
-                    <systemPropertyVariables>
-                        <allure.results.directory>
-                            ${project.build.directory}/allure-results
-                        </allure.results.directory>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-
+            <!-- Allure reporting plugin -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
@@ -99,5 +82,68 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+
+        <!-- =============================================
+             PROFILE: integration (default)
+             Runs tests against real dummyjson.com API
+             Usage: mvn test OR mvn test -Pintegration
+             ============================================= -->
+        <profile>
+            <id>integration</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>testng.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                            <systemPropertyVariables>
+                                <allure.results.directory>
+                                    ${project.build.directory}/allure-results
+                                </allure.results.directory>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- =============================================
+             PROFILE: mock
+             Runs tests against WireMock
+             Usage: mvn test -Pmock
+             ============================================= -->
+        <profile>
+            <id>mock</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>testng-mock.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                            <systemPropertyVariables>
+                                <allure.results.directory>
+                                    ${project.build.directory}/allure-results
+                                </allure.results.directory>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>
