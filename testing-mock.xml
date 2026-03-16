@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="Mock Test Suite" parallel="methods" thread-count="4" verbose="2">
+    <test name="Mock Tests">
+        <classes>
+            <class name="api.tests.MockTests"/>
+        </classes>
+    </test>
+</suite>

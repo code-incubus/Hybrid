@@ -1,0 +1,109 @@
+name: API Tests CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+
+  # =============================================
+  # JOB 1 — Integration Tests (dummyjson.com)
+  # =============================================
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Run integration tests
+        env:
+          BASE_URL: https://dummyjson.com
+          AUTH_URL: https://dummyjson.com/auth/login
+          AUTH_USERNAME: emilys
+          AUTH_PASSWORD: emilyspass
+        run: mvn test -Dsuite=testng.xml
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: allure-results-integration
+          path: target/allure-results
+
+  # =============================================
+  # JOB 2 — Mock Tests (WireMock u Dockeru)
+  # =============================================
+  mock-tests:
+    name: Mock Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Start WireMock container
+        run: |
+          docker run -d \
+            --name mock-service \
+            -p 8080:8080 \
+            -v ${{ github.workspace }}/wiremock/mappings:/home/wiremock/mappings \
+            wiremock/wiremock:latest
+
+      - name: Wait for WireMock to be ready
+        run: |
+          echo "Waiting for WireMock..."
+          until curl -sf http://localhost:8080/__admin/mappings; do
+            sleep 2
+          done
+          echo "WireMock is ready!"
+
+      - name: Run mock tests
+        env:
+          BASE_URL: http://localhost:8080
+          AUTH_URL: http://localhost:8080/auth/login
+          AUTH_USERNAME: emilys
+          AUTH_PASSWORD: emilyspass
+        run: mvn test -Dsuite=testng-mock.xml
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: allure-results-mock
+          path: target/allure-results
+
+      - name: Stop WireMock container
+        if: always()
+        run: docker stop mock-service
