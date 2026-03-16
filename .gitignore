@@ -3,6 +3,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Environment files — never commit!
+.env
+*.env
+.env.local
+.env.*.local
+
 ### IntelliJ IDEA ###
 .idea/
 .allure/

@@ -38,7 +38,7 @@ public class UserTests extends BaseTest {
 
         Assert.assertNotNull(first.getId(), "First user ID should not be null!");
         Assert.assertNotNull(last.getId(), "Last user ID should not be null!");
-        logger.info("✅ Total users: " + userList.getTotal()
+        logger.info(" Total users: " + userList.getTotal()
                 + " | Page size: " + userList.getUsers().size()
                 + " | First: " + first.getFirstName()
                 + " | Last: " + last.getFirstName());
@@ -62,7 +62,7 @@ public class UserTests extends BaseTest {
                 "First name should not be null!");
         Assert.assertNotNull(user.getEmail(),
                 "Email should not be null!");
-        logger.info("✅ User fetched: " + user.getFirstName()
+        logger.info(" User fetched: " + user.getFirstName()
                 + " " + user.getLastName());
     }
 
@@ -77,7 +77,7 @@ public class UserTests extends BaseTest {
         Response response = UserEndpoints.getUserById(99999);
         Assert.assertEquals(response.getStatusCode(), 404,
                 "Expected 404 Not Found");
-        logger.info("✅ 404 confirmed for non-existing user.");
+        logger.info(" 404 confirmed for non-existing user.");
     }
 
     // =============================================
@@ -105,7 +105,7 @@ public class UserTests extends BaseTest {
                 "Last name mismatch!");
         Assert.assertNotNull(created.getId(),
                 "ID should not be null after creation!");
-        logger.info("✅ User created with ID: " + created.getId());
+        logger.info(" User created with ID: " + created.getId());
     }
 
     // =============================================
@@ -125,7 +125,7 @@ public class UserTests extends BaseTest {
         UserResponse updated = response.as(UserResponse.class);
         Assert.assertEquals(updated.getFirstName(), payload.getFirstName(),
                 "First name should be updated!");
-        logger.info("✅ User updated: " + updated.getFirstName());
+        logger.info(" User updated: " + updated.getFirstName());
     }
 
     // =============================================
@@ -142,7 +142,7 @@ public class UserTests extends BaseTest {
         UserResponse deleted = response.as(UserResponse.class);
         Assert.assertTrue(deleted.getIsDeleted(),
                 "isDeleted should be true!");
-        logger.info("✅ User deleted. isDeleted: " + deleted.getIsDeleted());
+        logger.info(" User deleted. isDeleted: " + deleted.getIsDeleted());
     }
 
     // =============================================
@@ -160,7 +160,7 @@ public class UserTests extends BaseTest {
         Assert.assertNotNull(me.getEmail(),
                 "Email should not be null!");
 
-        logger.info("✅ Auth/me: " + me.getFirstName()
+        logger.info(" Auth/me: " + me.getFirstName()
                 + " " + me.getLastName());
     }
     // =============================================
@@ -181,7 +181,7 @@ public class UserTests extends BaseTest {
                 "Last name mismatch!");
         Assert.assertNotNull(created.getId(),
                 "ID should not be null!");
-        logger.info("✅ Thread: " + Thread.currentThread().getId()
+        logger.info(" Thread: " + Thread.currentThread().getId()
                 + " | Created: " + created.getFirstName()
                 + " " + created.getLastName());
     }
@@ -197,6 +197,6 @@ public class UserTests extends BaseTest {
         Response response = UserEndpoints.getUserById(invalidId);
         Assert.assertEquals(response.getStatusCode(), 404,
                 "Expected 404 for invalid ID: " + invalidId);
-        logger.info("✅ 404 confirmed for ID: " + invalidId);
+        logger.info(" 404 confirmed for ID: " + invalidId);
     }
 }

@@ -6,7 +6,11 @@ import io.restassured.http.ContentType;
 public class AuthService {
 
     public TokenResponse fetchToken() {
-        String authUrl = ConfigReader.getOrEnv("auth.url", "AUTH_URL");
+
+        // Non-sensitive URL — always in config.properties
+        String authUrl = ConfigReader.get("auth.url");
+
+        // Sensitive — must come from ENV or -D
         String username = ConfigReader.getOrEnv("auth.username", "AUTH_USERNAME");
         String password = ConfigReader.getOrEnv("auth.password", "AUTH_PASSWORD");
 
@@ -20,7 +24,6 @@ public class AuthService {
                 .post(authUrl)
                 .as(TokenResponse.class);
 
-        // If login failed, dummyjson returns message instead of token
         if (response.getAccessToken() == null) {
             throw new RuntimeException("Auth failed! Message: "
                     + response.getMessage());

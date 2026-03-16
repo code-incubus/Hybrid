@@ -36,10 +36,10 @@ jobs:
       - name: Run integration tests
         run: |
           mvn test -Pintegration \
-            -DBASE_URL=https://dummyjson.com \
-            -DAUTH_URL=https://dummyjson.com/auth/login \
-            -DAUTH_USERNAME=emilys \
-            -DAUTH_PASSWORD=emilyspass
+            -DBASE_URL=${{ secrets.BASE_URL_INTEGRATION }} \
+            -DAUTH_URL=${{ secrets.AUTH_URL_INTEGRATION }} \
+            -DAUTH_USERNAME=${{ secrets.AUTH_USERNAME }} \
+            -DAUTH_PASSWORD=${{ secrets.AUTH_PASSWORD }}
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
@@ -94,8 +94,8 @@ jobs:
           mvn test -Pmock \
             -DBASE_URL=http://localhost:8080 \
             -DAUTH_URL=http://localhost:8080/auth/login \
-            -DAUTH_USERNAME=emilys \
-            -DAUTH_PASSWORD=emilyspass
+            -DAUTH_USERNAME=${{ secrets.AUTH_USERNAME }} \
+            -DAUTH_PASSWORD=${{ secrets.AUTH_PASSWORD }}
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4

@@ -16,7 +16,7 @@ public class BaseRequest {
     public static RequestSpecification getSpec(AuthType authType) {
 
         RequestSpecBuilder builder = new RequestSpecBuilder()
-                .setBaseUri(ConfigReader.getOrEnv("base.url", "BASE_URL"))
+                .setBaseUri(ConfigReader.get("base.url"))
                 .setContentType(ContentType.JSON)
                 .addFilter(new AllureRestAssured());
 
