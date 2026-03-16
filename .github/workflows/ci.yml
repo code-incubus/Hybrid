@@ -89,6 +89,19 @@ jobs:
           done
           echo "WireMock is ready!"
 
+      - name: Debug — check WireMock mappings
+        env:
+          BASE_URL: http://localhost:8080
+        run: |
+          echo "=== Loaded WireMock mappings ==="
+          curl http://localhost:8080/__admin/mappings
+          echo ""
+          echo "=== Test GET /users ==="
+          curl http://localhost:8080/users
+          echo ""
+          echo "=== BASE_URL value ==="
+          echo "BASE_URL=$BASE_URL"
+
       - name: Run mock tests
         env:
           BASE_URL: http://localhost:8080
