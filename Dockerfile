@@ -14,11 +14,12 @@ RUN mvn dependency:go-offline -q
 # Copy source code
 COPY src ./src
 
-# Copy testng.xml
+# Copy TestNG suite files
 COPY testng.xml .
+COPY testng-mock.xml .
 
 # Copy WireMock mappings
 COPY wiremock ./wiremock
 
-# Default command — run all tests
-ENTRYPOINT ["mvn", "test"]
+# Default command — run integration tests
+ENTRYPOINT ["mvn", "test", "-Pintegration"]
