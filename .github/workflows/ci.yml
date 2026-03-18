@@ -107,3 +107,51 @@ jobs:
       - name: Stop WireMock container
         if: always()
         run: docker stop mock-service
+
+  # =============================================
+  # JOB 3 — Publish Allure Report to GitHub Pages
+  # =============================================
+  publish-report:
+    name: Publish Allure Report
+    runs-on: ubuntu-latest
+    # Wait for both test jobs to finish
+    needs: [ integration-tests, mock-tests ]
+    # Always run even if tests failed
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download integration test results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-integration
+          path: allure-results/integration
+
+      - name: Download mock test results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-mock
+          path: allure-results/mock
+
+      - name: Merge all results
+        run: |
+          mkdir -p allure-results-merged
+          cp -r allure-results/integration/. allure-results-merged/
+          cp -r allure-results/mock/. allure-results-merged/
+
+      - name: Generate Allure report
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: allure-results-merged
+          allure_report: allure-report
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-report
