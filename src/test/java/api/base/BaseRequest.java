@@ -23,12 +23,17 @@ public class BaseRequest {
         switch (authType) {
 
             case BEARER:
-                // Token is managed by TokenManager (caching + auto-refresh)
-                builder.addHeader("Authorization", "Bearer " + TokenManager.getToken());
+                builder.addHeader("Authorization",
+                        "Bearer " + TokenManager.getToken());
+                break;
+
+            case BEARER_KEYCLOAK:
+                // Uses Keycloak JWT token
+                builder.addHeader("Authorization",
+                        "Bearer " + TokenManager.getKeycloakToken());
                 break;
 
             case NO_AUTH:
-                // No authentication needed
                 break;
         }
 

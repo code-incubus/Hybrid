@@ -109,37 +109,106 @@ jobs:
         run: docker stop mock-service
 
   # =============================================
-  # JOB 3 — Publish Allure Report to GitHub Pages
+  # JOB 3 — Keycloak OAuth2 Tests
+  # =============================================
+  keycloak-tests:
+    name: Keycloak OAuth2 Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Start Keycloak container
+        run: |
+          docker run -d \
+            --name keycloak \
+            -p 8180:8080 \
+            -e KEYCLOAK_ADMIN=admin \
+            -e KEYCLOAK_ADMIN_PASSWORD=admin \
+            -v ${{ github.workspace }}/keycloak:/opt/keycloak/data/import \
+            quay.io/keycloak/keycloak:23.0 \
+            start-dev --import-realm
+
+      - name: Wait for Keycloak to be ready
+        run: |
+          echo "Waiting for Keycloak..."
+          until curl -sf http://localhost:8180/realms/test-realm; do
+            sleep 5
+          done
+          echo "Keycloak is ready!"
+
+      - name: Run Keycloak tests
+        run: |
+          mvn test -Pkeycloak \
+            -DBASE_URL=${{ secrets.BASE_URL_INTEGRATION }} \
+            -DAUTH_CLIENT_ID=api-test-client \
+            -DAUTH_CLIENT_SECRET=${{ secrets.AUTH_CLIENT_SECRET }} \
+            -DAUTH_GRANT_TYPE=client_credentials \
+            -DAUTH_URL=http://localhost:8180/realms/test-realm/protocol/openid-connect/token
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-keycloak
+          path: target/allure-results
+
+      - name: Stop Keycloak container
+        if: always()
+        run: docker stop keycloak
+
+  # =============================================
+  # JOB 4 — Publish Allure Report to GitHub Pages
   # =============================================
   publish-report:
     name: Publish Allure Report
     runs-on: ubuntu-latest
-    # Wait for both test jobs to finish
-    needs: [ integration-tests, mock-tests ]
-    # Always run even if tests failed
+    needs: [ integration-tests, mock-tests, keycloak-tests ]
     if: always()
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download integration test results
+      - name: Download integration results
         uses: actions/download-artifact@v4
         with:
           name: allure-results-integration
           path: allure-results/integration
 
-      - name: Download mock test results
+      - name: Download mock results
         uses: actions/download-artifact@v4
         with:
           name: allure-results-mock
           path: allure-results/mock
+
+      - name: Download Keycloak results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-keycloak
+          path: allure-results/keycloak
 
       - name: Merge all results
         run: |
           mkdir -p allure-results-merged
           cp -r allure-results/integration/. allure-results-merged/
           cp -r allure-results/mock/. allure-results-merged/
+          cp -r allure-results/keycloak/. allure-results-merged/
 
       - name: Generate Allure report
         uses: simple-elf/allure-report-action@master

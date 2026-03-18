@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+
+  # Keycloak - OAuth2 server
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - "8180:8080"
+    volumes:
+      # Auto-import our realm config on startup
+      - ./keycloak:/opt/keycloak/data/import
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/realms/test-realm"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Test runner - runs tests against dummyjson with Keycloak auth
+  api-tests:
+    build: .
+    command: >
+      test -Pintegration
+      -DBASE_URL=https://dummyjson.com
+      -DAUTH_URL=http://keycloak:8080/realms/test-realm/protocol/openid-connect/token
+      -DAUTH_CLIENT_ID=api-test-client
+      -DAUTH_CLIENT_SECRET=api-test-secret
+      -DAUTH_GRANT_TYPE=client_credentials
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    volumes:
+      - ./target/allure-results:/app/target/allure-results

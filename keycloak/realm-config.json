@@ -1,0 +1,23 @@
+{
+  "realm": "test-realm",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "api-test-client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-test-secret",
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-api-test-client",
+      "enabled": true,
+      "serviceAccountClientId": "api-test-client"
+    }
+  ]
+}
