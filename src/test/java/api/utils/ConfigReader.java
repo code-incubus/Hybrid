@@ -1,5 +1,7 @@
 package api.utils;
 
+import api.exceptions.ConfigurationException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -16,7 +18,7 @@ public class ConfigReader {
             properties = new Properties();
             properties.load(file);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot read config.properties!", e);
+            throw new ConfigurationException("Cannot read config.properties!", e);
         }
     }
 
@@ -61,13 +63,7 @@ public class ConfigReader {
         // 3. Fallback — config.properties
         String propValue = properties.getProperty(key);
         if (propValue == null || propValue.equals("CHANGE_ME")) {
-            throw new RuntimeException(
-                    "Missing configuration: '" + key + "'" +
-                            "\nSet via one of:" +
-                            "\n  - Maven:  -D" + envName + "=value" +
-                            "\n  - ENV:    " + envName + "=value" +
-                            "\n  - Config: " + key + "=value"
-            );
+            throw new ConfigurationException(key, envName);
         }
 
         return propValue;

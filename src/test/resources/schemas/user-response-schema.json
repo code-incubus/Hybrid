@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Response Schema",
+  "type": "object",
+  "required": ["id", "firstName", "lastName", "email", "gender", "age"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique user identifier",
+      "minimum": 1
+    },
+    "firstName": {
+      "type": "string",
+      "description": "User first name",
+      "minLength": 1
+    },
+    "lastName": {
+      "type": "string",
+      "description": "User last name",
+      "minLength": 1
+    },
+    "email": {
+      "type": "string",
+      "description": "User email address",
+      "format": "email"
+    },
+    "gender": {
+      "type": "string",
+      "description": "User gender",
+      "enum": ["male", "female"]
+    },
+    "age": {
+      "type": "integer",
+      "description": "User age",
+      "minimum": 0,
+      "maximum": 150
+    }
+  },
+  "additionalProperties": true
+}

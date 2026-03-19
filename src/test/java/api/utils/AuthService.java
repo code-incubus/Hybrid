@@ -1,5 +1,6 @@
 package api.utils;
 
+import api.exceptions.AuthenticationException;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -25,8 +26,10 @@ public class AuthService {
                 .as(TokenResponse.class);
 
         if (response.getToken() == null) {
-            throw new RuntimeException("Auth failed! Message: "
-                    + response.getMessage());
+            throw new AuthenticationException(
+                    authUrl,
+                    "Token is null. Message: " + response.getMessage()
+            );
         }
 
         return response;
@@ -57,8 +60,10 @@ public class AuthService {
                 .as(TokenResponse.class);
 
         if (response.getToken() == null) {
-            throw new RuntimeException("Keycloak auth failed! Error: "
-                    + response.getError());
+            throw new AuthenticationException(
+                    authUrl,
+                    "Token is null. Error: " + response.getError()
+            );
         }
 
         return response;

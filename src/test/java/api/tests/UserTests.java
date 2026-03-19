@@ -5,6 +5,7 @@ import api.models.UserRequest;
 import api.models.UserResponse;
 import api.models.UsersListResponse;
 import api.utils.DataProviders;
+import api.utils.SchemaValidator;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -26,6 +27,10 @@ public class UserTests extends BaseTest {
         Response response = UserEndpoints.getAllUsers();
         Assert.assertEquals(response.getStatusCode(), 200,
                 "Expected 200 OK");
+
+        // Schema validator - check the structure of the api
+        SchemaValidator.validate(response, "user-list-schema.json");
+
         UsersListResponse userList = response.as(UsersListResponse.class);
         Assert.assertNotNull(userList.getUsers(),
                 "Users list should not be null!");
@@ -55,6 +60,10 @@ public class UserTests extends BaseTest {
         Response response = UserEndpoints.getUserById(1);
         Assert.assertEquals(response.getStatusCode(), 200,
                 "Expected 200 OK");
+
+        // Schema validator - check the structure of the api
+        SchemaValidator.validate(response, "user-response-schema.json");
+
         UserResponse user = response.as(UserResponse.class);
         Assert.assertEquals(user.getId(), Integer.valueOf(1),
                 "ID mismatch!");
@@ -98,6 +107,10 @@ public class UserTests extends BaseTest {
         Response response = UserEndpoints.createUser(payload);
         Assert.assertEquals(response.getStatusCode(), 201,
                 "Expected 201 Created");
+
+        // Schema validator - check the structure of the api
+        SchemaValidator.validate(response, "create-user-response-schema.json");
+
         UserResponse created = response.as(UserResponse.class);
         Assert.assertEquals(created.getFirstName(), payload.getFirstName(),
                 "First name mismatch!");
