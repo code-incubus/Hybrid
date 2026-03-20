@@ -1,6 +1,7 @@
 package api.tests;
 
 import api.utils.AuthService;
+import api.utils.TokenManager;
 import api.utils.TokenResponse;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -16,18 +17,12 @@ public class KeycloakTests extends BaseTest {
     @Story("Client Credentials Flow")
     public void testKeycloakTokenIsObtained() {
 
-        // Directly test token fetching from Keycloak
         TokenResponse response = authService.fetchTokenKeycloak();
 
-        // Verify token exists
         Assert.assertNotNull(response.getToken(),
                 "Token should not be null!");
-
-        // Verify it's a JWT (starts with eyJ)
         Assert.assertTrue(response.getToken().startsWith("eyJ"),
                 "Token should be a JWT!");
-
-        // Verify expiry
         Assert.assertNotNull(response.getExpiresIn(),
                 "expires_in should not be null!");
         Assert.assertTrue(response.getExpiresIn() > 0,
@@ -45,30 +40,25 @@ public class KeycloakTests extends BaseTest {
         TokenResponse response = authService.fetchTokenKeycloak();
         String token = response.getToken();
 
-        // JWT has exactly 3 parts separated by "."
         String[] parts = token.split("\\.");
         Assert.assertEquals(parts.length, 3,
-                "JWT should have exactly 3 parts: header.payload.signature");
+                "JWT should have 3 parts: header.payload.signature");
 
-        logger.info("✅ Token is valid JWT format!"
-                + " | Header length: " + parts[0].length()
-                + " | Payload length: " + parts[1].length());
+        logger.info("✅ Token is valid JWT!"
+                + " | Header: " + parts[0].length()
+                + " | Payload: " + parts[1].length());
     }
 
     @Test
     @Story("Token caching")
     public void testKeycloakTokenIsCached() {
 
-        // First call — fetches from Keycloak
-        TokenResponse response1 = authService.fetchTokenKeycloak();
-
-        // Second call — should be same token (from cache via TokenManager)
-        String token1 = response1.getToken();
-        String token2 = api.utils.TokenManager.getKeycloakToken();
+        // Both calls through TokenManager — ensures caching is tested
+        String token1 = TokenManager.getKeycloakToken();  // fetchuje i kešira
+        String token2 = TokenManager.getKeycloakToken();  // vraća iz keša
 
         Assert.assertEquals(token1, token2,
-                "Token should be cached — same token on second call!");
-
+                "Token should be cached — same token on both calls!");
         logger.info("✅ Token caching works!");
     }
 }

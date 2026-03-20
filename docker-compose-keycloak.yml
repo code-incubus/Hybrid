@@ -1,8 +1,5 @@
-version: '3.8'
-
 services:
 
-  # Keycloak - OAuth2 server
   keycloak:
     image: quay.io/keycloak/keycloak:23.0
     command: start-dev --import-realm
@@ -12,19 +9,18 @@ services:
     ports:
       - "8180:8080"
     volumes:
-      # Auto-import our realm config on startup
       - ./keycloak:/opt/keycloak/data/import
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/realms/test-realm"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:8080/realms/test-realm 2>&1 | grep -v 'failed' || exit 0" ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
 
-  # Test runner - runs tests against dummyjson with Keycloak auth
   api-tests:
     build: .
     command: >
-      test -Pintegration
+      test -Pkeycloak
       -DBASE_URL=https://dummyjson.com
       -DAUTH_URL=http://keycloak:8080/realms/test-realm/protocol/openid-connect/token
       -DAUTH_CLIENT_ID=api-test-client
